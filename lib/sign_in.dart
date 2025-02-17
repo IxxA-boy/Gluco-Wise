@@ -3,11 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'sign_up.dart'; // Import the sign-up screen file
 import 'functional_screen_one.dart'; // Import the FunctionalScreenOne file
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
+
+  @override
+  _SignInScreenState createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Key for form validation
+  bool _isPasswordVisible = false; // Track password visibility
 
   Future<void> _signIn(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -69,6 +77,10 @@ class SignInScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen width and height
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Form(
@@ -79,7 +91,7 @@ class SignInScreen extends StatelessWidget {
               Stack(
                 children: [
                   Container(
-                    height: 200, // Adjust height of the curved header
+                    height: screenHeight * 0.25, // 25% of screen height
                     decoration: const BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.only(
@@ -88,7 +100,7 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: 40,
+                    top: 50,
                     left: 20,
                     child: IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -117,7 +129,9 @@ class SignInScreen extends StatelessWidget {
 
               // Email Input Field
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.1, // 10% of screen width
+                ),
                 child: TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -135,13 +149,27 @@ class SignInScreen extends StatelessWidget {
 
               // Password Input Field
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.1, // 10% of screen width
+                ),
                 child: TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: !_isPasswordVisible, // Toggle visibility
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: const Icon(Icons.visibility),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility_off // Show "hide" icon
+                            : Icons.visibility, // Show "show" icon
+                      ),
+                      onPressed: () {
+                        // Toggle password visibility
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                     hintText: "Password",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -166,7 +194,7 @@ class SignInScreen extends StatelessWidget {
 
               // Sign In Button
               SizedBox(
-                width: 200,
+                width: screenWidth * 0.5, // 50% of screen width
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -202,7 +230,7 @@ class SignInScreen extends StatelessWidget {
 
               // Google Sign-In
               SizedBox(
-                width: 250,
+                width: screenWidth * 0.7, // 70% of screen width
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -223,7 +251,7 @@ class SignInScreen extends StatelessWidget {
 
               // Facebook Sign-In
               SizedBox(
-                width: 250,
+                width: screenWidth * 0.7, // 70% of screen width
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
