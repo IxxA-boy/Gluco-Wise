@@ -1,8 +1,11 @@
+import 'package:assesment/healthtips_screen.dart';
 import 'package:flutter/material.dart';
 import 'functional_screen_two.dart'; // Import the next screen
 import 'history_screen.dart'; // Import the history screen
 import 'sign_in.dart'; // Import the sign-in screen
 import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
+import 'diabetes_checkups.dart';
+
 
 class FunctionalScreenOne extends StatelessWidget {
   final String firstName; // First name passed from the sign-up screen
@@ -23,15 +26,13 @@ class FunctionalScreenOne extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const HistoryScreen(),
+                    builder: (context) =>  HistoryScreen(),
                   ),
                 );
               } else if (value == "contact_us") {
                 // Handle Contact Us
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Contact Us option selected"),
-                  ),
+                  const SnackBar(content: Text("Contact Us option selected")),
                 );
               } else if (value == "logout") {
                 _signOut(context); // Call the logout function
@@ -39,18 +40,12 @@ class FunctionalScreenOne extends StatelessWidget {
             },
             itemBuilder: (BuildContext context) {
               return [
-                const PopupMenuItem(
-                  value: "history",
-                  child: Text("History"),
-                ),
+                const PopupMenuItem(value: "history", child: Text("History")),
                 const PopupMenuItem(
                   value: "contact_us",
                   child: Text("Contact Us"),
                 ),
-                const PopupMenuItem(
-                  value: "logout",
-                  child: Text("Logout"),
-                ),
+                const PopupMenuItem(value: "logout", child: Text("Logout")),
               ];
             },
           ),
@@ -62,19 +57,14 @@ class FunctionalScreenOne extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Track a Food
-            _buildOptionCard(
-              context,
-              "Track a Food",
-              Icons.fastfood,
-                  () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const FunctionalScreenTwo(),
-                  ),
-                );
-              },
-            ),
+            _buildOptionCard(context, "Track a Food", Icons.fastfood, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FunctionalScreenTwo(),
+                ),
+              );
+            }),
             const SizedBox(height: 20),
 
             // Health Tips
@@ -82,8 +72,11 @@ class FunctionalScreenOne extends StatelessWidget {
               context,
               "Health Tips",
               Icons.health_and_safety,
-                  () {
-                // Navigate to Health Tips screen
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HealthTipsScreen()),
+                );
               },
             ),
             const SizedBox(height: 20),
@@ -93,8 +86,11 @@ class FunctionalScreenOne extends StatelessWidget {
               context,
               "Diabetic Checkups",
               Icons.medical_services,
-                  () {
-                // Navigate to Diabetic Checkups screen
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DiabetesCheckups()),
+                );
               },
             ),
             const SizedBox(height: 20),
@@ -104,7 +100,7 @@ class FunctionalScreenOne extends StatelessWidget {
               context,
               "Communicate with a Doctor",
               Icons.chat,
-                  () {
+              () {
                 // Navigate to Communicate with a Doctor screen
               },
             ),
@@ -116,16 +112,14 @@ class FunctionalScreenOne extends StatelessWidget {
 
   // Helper method to build option cards
   Widget _buildOptionCard(
-      BuildContext context,
-      String title,
-      IconData icon,
-      VoidCallback onTap,
-      ) {
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return Card(
       elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
@@ -158,9 +152,7 @@ class FunctionalScreenOne extends StatelessWidget {
       // Navigate back to the SignInScreen after signing out
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => SignInScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => SignInScreen()),
       );
     } catch (e) {
       print("Failed to sign out: $e");

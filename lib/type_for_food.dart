@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'product_details_screen.dart'; // Import the product details screen
 
 class TypeForFood extends StatefulWidget {
   const TypeForFood({super.key});
@@ -23,10 +24,10 @@ class _TypeFoodScreenState extends State<TypeForFood> {
     try {
       // Construct the API URL
       final String apiUrl =
-          "https://world.openfoodfacts.org/cgi/search.pl?search_terms=$foodName&search_simple=1&json=1";
+          "https://world.openfoodfacts.org/cgi/search.pl?search_terms=$foodName&search_simple=1&json=1&page_size=10";
 
-      // Make the HTTP GET request
-      final response = await http.get(Uri.parse(apiUrl));
+      // Make the HTTP GET request with a timeout
+      final response = await http.get(Uri.parse(apiUrl)).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         // Parse the JSON response
@@ -35,12 +36,17 @@ class _TypeFoodScreenState extends State<TypeForFood> {
           _products = data['products']; // Store the products
         });
       } else {
-        setState(() {
-          _products = []; // Clear the products list
-        });
+        throw Exception("Failed to load data: ${response.statusCode}");
       }
     } catch (e) {
       print("Error: $e");
+      // Show an error message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to fetch data: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       setState(() {
         _isLoading = false; // Hide loading indicator
@@ -97,6 +103,15 @@ class _TypeFoodScreenState extends State<TypeForFood> {
                           ? "${product['nutriments']['sugars_100g']} g per 100g"
                           : "Sugar content not available",
                     ),
+                    onTap: () {
+                      // Navigate to ProductDetailsScreen with the selected product
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductDetailsScreen(product: product),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
