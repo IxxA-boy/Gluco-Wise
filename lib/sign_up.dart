@@ -5,12 +5,18 @@ import 'sign_in.dart';
 import 'functional_screen_one.dart';
 import 'theme_manager.dart';
 
-class ThirdScreen extends StatelessWidget {
+class ThirdScreen extends StatefulWidget {
+  @override
+  _ThirdScreenState createState() => _ThirdScreenState();
+}
+
+class _ThirdScreenState extends State<ThirdScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
 
   Future<void> _signUp(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -20,9 +26,7 @@ class ThirdScreen extends StatelessWidget {
           password: _passwordController.text.trim(),
         );
 
-        // Update user display name with full name
         await userCredential.user?.updateDisplayName(_fullNameController.text.trim());
-
         String firstName = _fullNameController.text.trim().split(" ")[0];
 
         Navigator.pushReplacement(
@@ -60,65 +64,68 @@ class ThirdScreen extends StatelessWidget {
     final themeManager = Provider.of<ThemeManager>(context);
     final isDarkMode = themeManager.isDarkMode;
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // Theme-based background image
           Positioned.fill(
             child: Image.asset(
               isDarkMode
-                  ? 'assets/images/image24.jpg'  // Your dark theme image
-                  : 'assets/images/image25.png', // Your light theme image
+                  ? 'assets/images/image24.jpg'
+                  : 'assets/images/image25.png',
               fit: BoxFit.cover,
+              color: Colors.black.withOpacity(0.1),
+              colorBlendMode: BlendMode.overlay,
             ),
           ),
 
           SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  // Curved Header
-                  Stack(
-                    children: [
-                      Container(
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: theme.primaryColor,
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(100),
-                          ),
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      height: 150, // Maintained height
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor,
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(100),
                         ),
                       ),
-                      Positioned(
-                        top: 40,
-                        left: 15,
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_back,
-                              color: theme.appBarTheme.iconTheme?.color),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Form Container
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 24),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor.withOpacity(0.85),
-                      borderRadius: BorderRadius.circular(20),
                     ),
+                    Positioned(
+                      top: 40,
+                      left: 15,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back,
+                            color: theme.appBarTheme.iconTheme?.color),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Narrower container with same height content
+                Container(
+                  margin: const EdgeInsets.only(top: 20, bottom: 20),
+                  width: screenWidth * 0.8, // Reduced width to 80% of screen
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: theme.cardColor.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Form(
+                    key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 10),
                         Text(
                           "Sign up",
                           style: TextStyle(
-                            fontSize: 26,
+                            fontSize: 26, // Same font size
                             fontWeight: FontWeight.bold,
                             color: theme.textTheme.bodyLarge?.color,
                           ),
@@ -127,13 +134,13 @@ class ThirdScreen extends StatelessWidget {
                         Text(
                           "Create an account here",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16, // Same font size
                             color: theme.textTheme.bodyMedium?.color,
                           ),
                         ),
                         const SizedBox(height: 20),
 
-                        // Full Name Field
+                        // Form fields with original styling but in narrower container
                         TextFormField(
                           controller: _fullNameController,
                           style: TextStyle(color: theme.textTheme.bodyLarge?.color),
@@ -150,7 +157,6 @@ class ThirdScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 15),
 
-                        // Email Field
                         TextFormField(
                           controller: _emailController,
                           style: TextStyle(color: theme.textTheme.bodyLarge?.color),
@@ -162,17 +168,25 @@ class ThirdScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 15),
 
-                        // Password Field
                         TextFormField(
                           controller: _passwordController,
-                          obscureText: true,
+                          obscureText: _obscurePassword,
                           style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                           decoration: InputDecoration(
                             labelText: "Password",
                             labelStyle: TextStyle(color: theme.hintColor),
-                            suffixIcon: Icon(
-                              Icons.visibility_off,
-                              color: theme.iconTheme.color,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: theme.iconTheme.color,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
                             ),
                           ),
                           validator: _validatePassword,
@@ -188,23 +202,24 @@ class ThirdScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
 
-                        // Sign Up Button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: theme.primaryColor,
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
+                        // Buttons adjusted for narrower container
+                        Center(
+                          child: SizedBox(
+                            width: double.infinity, // Take full width of the narrower container
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: theme.primaryColor,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
                               ),
-                            ),
-                            onPressed: () => _signUp(context),
-                            child: Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: theme.colorScheme.onPrimary,
+                              onPressed: () => _signUp(context),
+                              child: Text(
+                                "Sign Up",
+                                style: TextStyle(
+                                    color: theme.colorScheme.onPrimary,
+                                    fontSize: 16),
                               ),
                             ),
                           ),
@@ -212,102 +227,140 @@ class ThirdScreen extends StatelessWidget {
                         const SizedBox(height: 20),
 
                         // OR Divider
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Divider(
-                                thickness: 1,
-                                color: theme.dividerColor,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                "OR",
-                                style: TextStyle(
-                                  color: theme.textTheme.bodyMedium?.color,
+                        Center(
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: theme.dividerColor,
+                                  ),
                                 ),
-                              ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  child: Text(
+                                    "OR",
+                                    style: TextStyle(
+                                      color: theme.textTheme.bodyMedium?.color,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: theme.dividerColor,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Expanded(
-                              child: Divider(
-                                thickness: 1,
-                                color: theme.dividerColor,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                         const SizedBox(height: 20),
 
-                        // Social Login Buttons
-                        _buildSocialButton(
-                          context,
-                          icon: Image.network(
-                            "https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png",
-                            height: 24,
+                        // Social buttons adjusted for narrower container
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                              foregroundColor: isDarkMode ? Colors.white : Colors.black87,
+                              side: BorderSide(
+                                color: isDarkMode ? Colors.grey[600]! : Colors.grey[300]!,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            onPressed: () {},
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.network(
+                                  "https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png",
+                                  height: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "Login with Google",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isDarkMode ? Colors.white : Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          label: "Login with Gmail",
                         ),
                         const SizedBox(height: 10),
-                        _buildSocialButton(
-                          context,
-                          icon: Image.network(
-                            "https://upload.wikimedia.org/wikipedia/commons/c/cd/Facebook_logo_%28square%29.png",
-                            height: 24,
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                              foregroundColor: isDarkMode ? Colors.white : Colors.black87,
+                              side: BorderSide(
+                                color: isDarkMode ? Colors.grey[600]! : Colors.grey[300]!,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            onPressed: () {},
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.network(
+                                  "https://upload.wikimedia.org/wikipedia/commons/c/cd/Facebook_logo_%28square%29.png",
+                                  height: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "Login with Facebook",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isDarkMode ? Colors.white : Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          label: "Login with Facebook",
                         ),
                         const SizedBox(height: 20),
 
-                        // Sign In Link
                         Center(
                           child: TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: isDarkMode ? Colors.yellow[200] : Colors.deepPurple ,
+                            ),
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => const SignInScreen()),
+                                MaterialPageRoute(builder: (context) => const SignInScreen()),
                               );
                             },
-                            child: Text(
+                            child: const Text(
                               "Already have an account? Sign in",
-                              style: TextStyle(color: theme.primaryColor),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSocialButton(BuildContext context, {required Image icon, required String label}) {
-    final theme = Theme.of(context);
-
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: theme.cardColor,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-            side: BorderSide(color: theme.dividerColor),
-          ),
-        ),
-        icon: icon,
-        onPressed: () {},
-        label: Text(
-          label,
-          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
-        ),
       ),
     );
   }
