@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
@@ -82,23 +83,93 @@ class _FirstScreenState extends State<FirstScreen> {
             ),
           ),
           // Centered text
-          /*const Center(
-            child: Text(
-              'GLUCO-WISE',
-              style: TextStyle(
-                fontSize: 80,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                shadows: [
-                  Shadow(
-                    offset: Offset(2, 2),
-                    blurRadius: 5,
-                    color: Colors.black,
-                  ),
-                ],
-              ),
+      ),
+    );
+  }
+}*/
+
+// main.dart
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'firebase_options.dart';
+import 'second_screen.dart';
+import 'sign_in.dart';
+import 'theme_manager.dart'; // Import the theme manager file
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => ThemeManager(),
+      child: Consumer<ThemeManager>(
+        builder: (context, themeManager, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: AppThemes.lightTheme,
+            darkTheme: AppThemes.darkTheme,
+            themeMode: themeManager.themeMode,
+            home: const FirstScreen(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class FirstScreen extends StatefulWidget {
+  const FirstScreen({super.key});
+
+  @override
+  _FirstScreenState createState() => _FirstScreenState();
+}
+
+class _FirstScreenState extends State<FirstScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 7), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SecondScreen()),
+      );
+    });
+  }
+
+  void loadAsset() async {
+    try {
+      final data = await rootBundle.load('assets/image16.png');
+      print('Asset loaded successfully');
+    } catch (e) {
+      print('Failed to load asset: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Container(
+          width: 500,
+          height: 500,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/image16.png'),
+              fit: BoxFit.contain,
             ),
-          ),*/
+          ),
+        ),
       ),
     );
   }

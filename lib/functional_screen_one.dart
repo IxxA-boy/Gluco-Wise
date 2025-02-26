@@ -1,124 +1,154 @@
 import 'package:assesment/healthtips_screen.dart';
 import 'package:flutter/material.dart';
-import 'functional_screen_two.dart'; // Import the next screen
-import 'history_screen.dart'; // Import the history screen
-import 'sign_in.dart'; // Import the sign-in screen
-import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
+import 'package:provider/provider.dart';
+import 'functional_screen_two.dart';
+import 'history_screen.dart';
+import 'sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'diabetes_checkups.dart';
-
+import 'theme_manager.dart';
 
 class FunctionalScreenOne extends StatelessWidget {
-  final String firstName; // First name passed from the sign-up screen
+  final String firstName;
 
   const FunctionalScreenOne({super.key, required this.firstName});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = Provider.of<ThemeManager>(context).isDarkMode;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Welcome, $firstName"),
+        title: Text(
+          "Welcome, $firstName",
+          style: TextStyle(color: theme.appBarTheme.titleTextStyle?.color),
+        ),
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        iconTheme: theme.appBarTheme.iconTheme,
         actions: [
+          IconButton(
+            icon: Icon(Icons.brightness_6, color: theme.iconTheme.color),
+            onPressed: () {
+              Provider.of<ThemeManager>(context, listen: false)
+                  .toggleTheme(!isDarkMode);
+            },
+          ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.menu, color: Colors.black),
+            icon: Icon(Icons.menu, color: theme.iconTheme.color),
             onSelected: (value) {
               if (value == "history") {
-                // Navigate to History Screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) =>  HistoryScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => HistoryScreen()),
                 );
               } else if (value == "contact_us") {
-                // Handle Contact Us
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Contact Us option selected")),
+                  SnackBar(content: Text("Contact Us option selected")),
                 );
               } else if (value == "logout") {
-                _signOut(context); // Call the logout function
+                _signOut(context);
               }
             },
             itemBuilder: (BuildContext context) {
               return [
-                const PopupMenuItem(value: "history", child: Text("History")),
-                const PopupMenuItem(
-                  value: "contact_us",
-                  child: Text("Contact Us"),
-                ),
-                const PopupMenuItem(value: "logout", child: Text("Logout")),
+                PopupMenuItem(
+                    value: "history",
+                    child: Text("History",
+                        style: TextStyle(color: theme.textTheme.bodyLarge?.color))),
+                PopupMenuItem(
+                    value: "contact_us",
+                    child: Text("Contact Us",
+                        style: TextStyle(color: theme.textTheme.bodyLarge?.color))),
+                PopupMenuItem(
+                    value: "logout",
+                    child: Text("Logout",
+                        style: TextStyle(color: theme.textTheme.bodyLarge?.color))),
               ];
             },
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Track a Food
-            _buildOptionCard(context, "Track a Food", Icons.fastfood, () {
-              Navigator.push(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+              isDarkMode
+                  ? 'assets/images/image24.jpg'
+                  : 'assets/images/image25.png',
+            ),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildOptionCard(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const FunctionalScreenTwo(),
-                ),
-              );
-            }),
-            const SizedBox(height: 20),
-
-            // Health Tips
-            _buildOptionCard(
-              context,
-              "Health Tips",
-              Icons.health_and_safety,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HealthTipsScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-
-            // Diabetic Checkups
-            _buildOptionCard(
-              context,
-              "Diabetic Checkups",
-              Icons.medical_services,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DiabetesCheckups()),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-
-            // Communicate with a Doctor
-            _buildOptionCard(
-              context,
-              "Communicate with a Doctor",
-              Icons.chat,
-              () {
-                // Navigate to Communicate with a Doctor screen
-              },
-            ),
-          ],
+                "Track a Food",
+                Icons.fastfood,
+                    () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FunctionalScreenTwo(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildOptionCard(
+                context,
+                "Health Tips",
+                Icons.health_and_safety,
+                    () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HealthTipsScreen()),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildOptionCard(
+                context,
+                "Diabetic Checkups",
+                Icons.medical_services,
+                    () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DiabetesCheckups()),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildOptionCard(
+                context,
+                "Communicate with a Doctor",
+                Icons.chat,
+                    () {
+                  // Navigate to Communicate with a Doctor screen
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Helper method to build option cards
   Widget _buildOptionCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
+      BuildContext context,
+      String title,
+      IconData icon,
+      VoidCallback onTap,
+      ) {
+    final theme = Theme.of(context);
+
     return Card(
       elevation: 5,
+      color: theme.cardColor.withOpacity(0.85),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
         onTap: onTap,
@@ -127,13 +157,14 @@ class FunctionalScreenOne extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(icon, size: 40, color: Colors.green),
+              Icon(icon, size: 40, color: theme.primaryColor),
               const SizedBox(width: 20),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: theme.textTheme.bodyLarge?.color,
                 ),
               ),
             ],
@@ -143,20 +174,14 @@ class FunctionalScreenOne extends StatelessWidget {
     );
   }
 
-  // Function to handle user logout
   Future<void> _signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      print("User signed out");
-
-      // Navigate back to the SignInScreen after signing out
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => SignInScreen()),
+        MaterialPageRoute(builder: (context) => const SignInScreen()),
       );
     } catch (e) {
-      print("Failed to sign out: $e");
-      // Show an error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Failed to sign out: $e"),
