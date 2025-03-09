@@ -1,4 +1,5 @@
 import 'package:assesment/healthtips_screen.dart';
+import 'package:assesment/usage_chart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'functional_screen_two.dart';
@@ -30,8 +31,10 @@ class FunctionalScreenOne extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.brightness_6, color: theme.iconTheme.color),
             onPressed: () {
-              Provider.of<ThemeManager>(context, listen: false)
-                  .toggleTheme(!isDarkMode);
+              Provider.of<ThemeManager>(
+                context,
+                listen: false,
+              ).toggleTheme(!isDarkMode);
             },
           ),
           PopupMenuButton<String>(
@@ -53,17 +56,26 @@ class FunctionalScreenOne extends StatelessWidget {
             itemBuilder: (BuildContext context) {
               return [
                 PopupMenuItem(
-                    value: "history",
-                    child: Text("History",
-                        style: TextStyle(color: theme.textTheme.bodyLarge?.color))),
+                  value: "history",
+                  child: Text(
+                    "History",
+                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                  ),
+                ),
                 PopupMenuItem(
-                    value: "contact_us",
-                    child: Text("Contact Us",
-                        style: TextStyle(color: theme.textTheme.bodyLarge?.color))),
+                  value: "contact_us",
+                  child: Text(
+                    "Contact Us",
+                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                  ),
+                ),
                 PopupMenuItem(
-                    value: "logout",
-                    child: Text("Logout",
-                        style: TextStyle(color: theme.textTheme.bodyLarge?.color))),
+                  value: "logout",
+                  child: Text(
+                    "Logout",
+                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                  ),
+                ),
               ];
             },
           ),
@@ -85,25 +97,20 @@ class FunctionalScreenOne extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildOptionCard(
-                context,
-                "Track a Food",
-                Icons.fastfood,
-                    () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FunctionalScreenTwo(),
-                    ),
-                  );
-                },
-              ),
+              _buildOptionCard(context, "Track a Food", Icons.fastfood, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FunctionalScreenTwo(),
+                  ),
+                );
+              }),
               const SizedBox(height: 20),
               _buildOptionCard(
                 context,
                 "Health Tips",
                 Icons.health_and_safety,
-                    () {
+                () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => HealthTipsScreen()),
@@ -115,7 +122,7 @@ class FunctionalScreenOne extends StatelessWidget {
                 context,
                 "Diabetic Checkups",
                 Icons.medical_services,
-                    () {
+                () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => DiabetesCheckups()),
@@ -125,10 +132,15 @@ class FunctionalScreenOne extends StatelessWidget {
               const SizedBox(height: 20),
               _buildOptionCard(
                 context,
-                "Communicate with a Doctor",
-                Icons.chat,
-                    () {
-                  // Navigate to Communicate with a Doctor screen
+                "Daily Sugar Tracker",
+                Icons.bar_chart,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UsageChartScreen(),
+                    ),
+                  );
                 },
               ),
             ],
@@ -139,11 +151,11 @@ class FunctionalScreenOne extends StatelessWidget {
   }
 
   Widget _buildOptionCard(
-      BuildContext context,
-      String title,
-      IconData icon,
-      VoidCallback onTap,
-      ) {
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     final theme = Theme.of(context);
 
     return Card(
