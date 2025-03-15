@@ -48,6 +48,59 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  // New method to handle forgot password
+  Future<void> _handleForgotPassword() async {
+    // Validate email first
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email first'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Show confirmation dialog
+    bool? shouldReset = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Password'),
+        content: Text('Would you like to send a password reset link to ${_emailController.text}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+
+    // Send reset link if user confirms
+    if (shouldReset == true) {
+      try {
+        await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password reset link sent to your email'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message ?? 'An error occurred'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return "Email is required";
@@ -195,11 +248,11 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                         const SizedBox(height: 8),
 
-                        // Fixed Forgot Password button
+                        // Modified Forgot Password button
                         Align(
                           alignment: Alignment.center,
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: _handleForgotPassword,
                             child: Text(
                               "Forgot Password?",
                               style: TextStyle(

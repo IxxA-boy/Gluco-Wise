@@ -65,6 +65,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
     final isDarkMode = themeManager.isDarkMode;
     final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -108,10 +109,11 @@ class _ThirdScreenState extends State<ThirdScreen> {
                   ],
                 ),
 
-                // Narrower container with same height content
+                // Increased container height and reduced width
                 Container(
                   margin: const EdgeInsets.only(top: 20, bottom: 20),
-                  width: screenWidth * 0.8, // Reduced width to 80% of screen
+                  width: screenWidth * 0.9, // Increased to 90% of screen width
+                  height: screenHeight * 0.75, // Added height to stretch the container
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: theme.cardColor.withOpacity(0.85),
@@ -119,240 +121,246 @@ class _ThirdScreenState extends State<ThirdScreen> {
                   ),
                   child: Form(
                     key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Sign up",
-                          style: TextStyle(
-                            fontSize: 26, // Same font size
-                            fontWeight: FontWeight.bold,
-                            color: theme.textTheme.bodyLarge?.color,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          "Create an account here",
-                          style: TextStyle(
-                            fontSize: 16, // Same font size
-                            color: theme.textTheme.bodyMedium?.color,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Form fields with original styling but in narrower container
-                        TextFormField(
-                          controller: _fullNameController,
-                          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
-                          decoration: InputDecoration(
-                            labelText: "Full Name",
-                            labelStyle: TextStyle(color: theme.hintColor),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Full Name is required";
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 15),
-
-                        TextFormField(
-                          controller: _emailController,
-                          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
-                          decoration: InputDecoration(
-                            labelText: "Email address",
-                            labelStyle: TextStyle(color: theme.hintColor),
-                          ),
-                          validator: _validateEmail,
-                        ),
-                        const SizedBox(height: 15),
-
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
-                          decoration: InputDecoration(
-                            labelText: "Password",
-                            labelStyle: TextStyle(color: theme.hintColor),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: theme.iconTheme.color,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Sign up",
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: theme.textTheme.bodyLarge?.color,
                             ),
                           ),
-                          validator: _validatePassword,
-                        ),
-                        const SizedBox(height: 10),
-
-                        Text(
-                          "By signing up you agree with our Terms of Use",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: theme.textTheme.bodyMedium?.color,
+                          const SizedBox(height: 5),
+                          Text(
+                            "Create an account here",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: theme.textTheme.bodyMedium?.color,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
-                        // Buttons adjusted for narrower container
-                        Center(
-                          child: SizedBox(
-                            width: double.infinity, // Take full width of the narrower container
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: theme.primaryColor,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
+                          // Form fields
+                          TextFormField(
+                            controller: _fullNameController,
+                            style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                            decoration: InputDecoration(
+                              labelText: "Full Name",
+                              labelStyle: TextStyle(color: theme.hintColor),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Full Name is required";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 15),
+
+                          TextFormField(
+                            controller: _emailController,
+                            style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                            decoration: InputDecoration(
+                              labelText: "Email address",
+                              labelStyle: TextStyle(color: theme.hintColor),
+                            ),
+                            validator: _validateEmail,
+                          ),
+                          const SizedBox(height: 15),
+
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                            decoration: InputDecoration(
+                              labelText: "Password",
+                              labelStyle: TextStyle(color: theme.hintColor),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: theme.iconTheme.color,
                                 ),
-                              ),
-                              onPressed: () => _signUp(context),
-                              child: Text(
-                                "Sign Up",
-                                style: TextStyle(
-                                    color: theme.colorScheme.onPrimary,
-                                    fontSize: 16),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
                               ),
                             ),
+                            validator: _validatePassword,
                           ),
-                        ),
-                        const SizedBox(height: 20),
+                          const SizedBox(height: 10),
 
-                        // OR Divider
-                        Center(
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: theme.dividerColor,
+                          Text(
+                            "By signing up you agree with our Terms of Use",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: theme.textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Buttons with reduced width
+                          Center(
+                            child: SizedBox(
+                              width: screenWidth * 0.6, // Reduced to 60% of screen width
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.primaryColor,
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  child: Text(
-                                    "OR",
-                                    style: TextStyle(
-                                      color: theme.textTheme.bodyMedium?.color,
+                                onPressed: () => _signUp(context),
+                                child: Text(
+                                  "Sign Up",
+                                  style: TextStyle(
+                                      color: theme.colorScheme.onPrimary,
+                                      fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          // OR Divider
+                          Center(
+                            child: SizedBox(
+                              width: screenWidth * 0.6,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: theme.dividerColor,
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: theme.dividerColor,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    child: Text(
+                                      "OR",
+                                      style: TextStyle(
+                                        color: theme.textTheme.bodyMedium?.color,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: theme.dividerColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Social buttons with reduced width
+                          Center(
+                            child: SizedBox(
+                              width: screenWidth * 0.6,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                                  foregroundColor: isDarkMode ? Colors.white : Colors.black87,
+                                  side: BorderSide(
+                                    color: isDarkMode ? Colors.grey[600]! : Colors.grey[300]!,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                              ],
+                                onPressed: () {},
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.network(
+                                      "https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png",
+                                      height: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Login with Google",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: isDarkMode ? Colors.white : Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
+                          const SizedBox(height: 10),
 
-                        // Social buttons adjusted for narrower container
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                              foregroundColor: isDarkMode ? Colors.white : Colors.black87,
-                              side: BorderSide(
-                                color: isDarkMode ? Colors.grey[600]! : Colors.grey[300]!,
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                            onPressed: () {},
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.network(
-                                  "https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png",
-                                  height: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  "Login with Google",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isDarkMode ? Colors.white : Colors.black87,
+                          Center(
+                            child: SizedBox(
+                              width: screenWidth * 0.6,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                                  foregroundColor: isDarkMode ? Colors.white : Colors.black87,
+                                  side: BorderSide(
+                                    color: isDarkMode ? Colors.grey[600]! : Colors.grey[300]!,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                              foregroundColor: isDarkMode ? Colors.white : Colors.black87,
-                              side: BorderSide(
-                                color: isDarkMode ? Colors.grey[600]! : Colors.grey[300]!,
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                            onPressed: () {},
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.network(
-                                  "https://upload.wikimedia.org/wikipedia/commons/c/cd/Facebook_logo_%28square%29.png",
-                                  height: 20,
+                                onPressed: () {},
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.network(
+                                      "https://upload.wikimedia.org/wikipedia/commons/c/cd/Facebook_logo_%28square%29.png",
+                                      height: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Login with Facebook",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: isDarkMode ? Colors.white : Colors.black87,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  "Login with Facebook",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isDarkMode ? Colors.white : Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        Center(
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              foregroundColor: isDarkMode ? Colors.yellow[200] : Colors.deepPurple ,
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const SignInScreen()),
-                              );
-                            },
-                            child: const Text(
-                              "Already have an account? Sign in",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 20),
+
+                          Center(
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: isDarkMode ? Colors.yellow[200] : Colors.deepPurple,
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const SignInScreen()),
+                                );
+                              },
+                              child: const Text(
+                                "Already have an account? Sign in",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

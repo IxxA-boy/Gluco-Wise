@@ -146,8 +146,8 @@ class SecondScreen extends StatelessWidget {
           // Background image changes based on theme
           Image.asset(
             themeManager.isDarkMode
-                ? 'assets/images/image8_dark.jpg'
-                : 'assets/images/image8.jpg',
+                ? 'assets/images/image3.jpg'
+                : 'assets/images/image4.jpg',
             fit: BoxFit.cover,
             color: themeManager.isDarkMode
                 ? Colors.black.withOpacity(0.7)
